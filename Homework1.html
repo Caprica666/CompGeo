@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Computational Geometry Example</title>
+
+    <link rel="stylesheet" type="text/css" href="https://jsxgraph.org/distrib/jsxgraph.css" />
+    <script type="text/javascript" src="https://jsxgraph.org/distrib/jsxgraphcore.js"></script>
+    <script type="text/javascript" src="scripts/CreateRandomPolygon.js"></script>
+    <script type="text/javascript" src="scripts/CreateRandomPoints.js"></script>
+    <script type="text/javascript" src="scripts/LinePolyIntersect.js"></script>
+</head>
+
+<body>
+    <div id="box" class="jxgbox" style="width:500px; height:500px;"></div>
+    <script type="text/javascript">
+        var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 0, 50, 50], axis: true });
+        var bounds = [2, 2, 20, 20]
+        var poly = CreateRandomConvexPolygon(board, 15, bounds);
+        var endpoints = CreateRandomPoints('L', board, 2, bounds);
+        var line = board.create('line', endpoints);
+        console.log("slope = " + line.getSlope() + " yinter = " + line.getRise());
+        var result = LinePolyIntersect(poly.vertices, line);
+        if (Array.isArray(result))
+        {
+            board.create('point', result, {name: 'Intersection', size: 5, fillColor: "#ff0000" });
+        }
+   </script>
+
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E969D5CA-C29A-48A6-9604-8C62C2621BFC}"
+	ProjectSection(SolutionItems) = preProject
+		CompGeoExample.html = CompGeoExample.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF92CB66-2960-4668-AAD5-B81D0BF9FA55}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\CreateRandomPolygon.js = scripts\CreateRandomPolygon.js
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF92CB66-2960-4668-AAD5-B81D0BF9FA55} = {E969D5CA-C29A-48A6-9604-8C62C2621BFC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7ADA4A31-C348-4B93-895E-09D05C876F4E}
+	EndGlobalSection
+EndGlobal
