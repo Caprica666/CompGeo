@@ -40,7 +40,7 @@ function print_points(pts)
         p = pts[i];
         str += p.name + "(" + p.X() + ", " + p.Y() + ") ";
     }
-    console.log(str);
+    log(str);
 }
 
 function FindParetoOptimal(inpoints)

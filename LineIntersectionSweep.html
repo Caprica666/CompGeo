@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Line Intersection Sweep Algorithm</title>
+
+    <link rel="stylesheet" type="text/css" href="https://jsxgraph.org/distrib/jsxgraph.css" />
+    <script type="text/javascript">        
+        function log(str)
+        {
+            console.log(str);
+        }
+    </script>
+    <script type="text/javascript" src="https://jsxgraph.org/distrib/jsxgraphcore.js"></script>
+    <script type="text/javascript" src="scripts/CreateRandomLineSegments.js"></script>
+    <script type="text/javascript" src="bintree/treebase.js"></script>
+    <script type="text/javascript" src="bintree/rbtree.js"></script>
+    <script type="text/javascript" src="scripts/LineSegIntersect.js"></script>
+    <script type="text/javascript" src="homework1.js"></script>
+ </head>
+
+<body>
+<script type=""text/javascript">
+    let lsegs = null;
+
+    function line_segment_intersection()
+    {
+        var bounds = [2, 2, 48, 48]
+
+        if (lsegs == null)
+        {
+            lsegs = CreateRandomLineSegments(10, bounds);
+        }
+        var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 50, 50, 0], axis: true });
+        var lines = AddLineSegmentsToBoard(board, lsegs, 'L');
+        var result = FindIntersectionsOfLineSegments(lines);
+        var str = "";
+        if (Array.isArray(result))
+        {
+            for (let i = 0; i < result.length; ++i)
+            {
+                var p = result[i];
+                var point = board.create('point', p, { name: "I" + i, size: 4, fillColor: "#0000ff"});
+            }
+            board.fullUpdate();
+        }
+    }
+</script>
+
+<button id="lseg"style="width:200px;height:30px;border:2px solid;" onclick="javascript: line_segment_intersection();">
+    Line Segment Intersection
+</button>
+<div id="box" class="jxgbox" style="width:500px; height:400px;"></div>
+</body>
+</html>

@@ -14,7 +14,7 @@ function CreateRandomPoints(nameprefix, board, npoints, bounds)
     {
         x = Math.floor(bounds[0] + Math.random() * width);
         y = Math.floor(bounds[1] + Math.random() * height);
-        points[i] = board.create('point', [x, y], { name: nameprefix + i, size: 4})
+        points[i] = board.create('point', [x, y], { name: nameprefix + i, size: 4});
     }
     return points;
 }

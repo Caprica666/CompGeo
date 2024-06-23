@@ -2,10 +2,11 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "type": "msedge",
+        "type": "chrome",
         "request": "launch",
-        "name": "MSEDGE CompGeoExample",
-        "file": "${workspaceFolder}/Homework1.html",
+        "name": "Homework1",
+        "file": "${workspaceFolder}/LineIntersectionSweep.html",
+        "webRoot": "${workspaceFolder}",
         "runtimeExecutable" : "stable",
       }
     ]

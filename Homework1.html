@@ -6,60 +6,35 @@
     <title>Computational Geometry Example</title>
 
     <link rel="stylesheet" type="text/css" href="https://jsxgraph.org/distrib/jsxgraph.css" />
+    <script type="text/javascript">        
+        function log(str)
+        {
+            console.log(str);
+        }
+    </script>
     <script type="text/javascript" src="https://jsxgraph.org/distrib/jsxgraphcore.js"></script>
     <script type="text/javascript" src="scripts/CreateRandomPolygon.js"></script>
     <script type="text/javascript" src="scripts/CreateRandomPoints.js"></script>
+    <script type="text/javascript" src="scripts/CreateRandomPoints.js"></script>
+    <script type="text/javascript" src="scripts/CreateRandomLineSegments.js"></script>
     <script type="text/javascript" src="scripts/LinePolyIntersect.js"></script>
+    <script type="text/javascript" src="bintree/treebase.js"></script>
+    <script type="text/javascript" src="bintree/rbtree.js"></script>
+    <script type="text/javascript" src="scripts/LineSegIntersect.js"></script>
     <script type="text/javascript" src="scripts/FindParetoOptimal.js"></script>
-    <script type="text/javascript">
-        function Part1C_polygon_intersection()
-        {
-            var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 0, 50, 50], axis: true });
-            var bounds = [2, 2, 20, 20]
-            var poly = CreateRandomConvexPolygon(board, 15, bounds);
-            var endpoints = CreateRandomPoints('L', board, 2, bounds);
-            var line = board.create('line', endpoints);
-            console.log("slope = " + line.getSlope() + " yinter = " + line.getRise());
-            var result = LinePolyIntersect(poly.vertices, line);
-            if (Array.isArray(result))
-            {
-                board.create('point', result, {name: 'Intersection', size: 5, fillColor: "#ff0000" });
-            }
-        }
-   </script>
-    <script type="text/javascript">
-        function Part2B_pareto_optimal()
-        {
-            var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 50, 50, 0], axis: true });
-            var bounds = [2, 2, 48, 48]
-            var points = CreateRandomPoints('P', board, 10, bounds);
-            var result = FindParetoOptimal(points);
-            var str = "";
-            if (Array.isArray(result))
-            {
-                for (let i = 0; i < result.length; ++i)
-                {
-                    var p = result[i];
-                    p.setAttribute({fillColor: "#0000ff"});
-                    str += p.name + " ";
-                }
-                console.log(str);
-                board.fullUpdate();
-            }
-        }
-   </script>
-</head>
+    <script type="text/javascript" src="homework1.js"></script>
+ </head>
 
 <body>
-    <label for="1C" style="width:300px;height:150px;border:1px solid;"
-                    onclick="javascript:Part1C_polygon_intersection();">
-                    1C polygon intersection
-    </label>
-    <br><br>
-    <label for="2B"style="width:300px;height:150px;border:1px solid;"
-                    onclick="javascript:Part2B_pareto_optimal();">
+    <button id="1C" style="width:200px;height:30px;border:2px solid;" onclick="javascript: Part1C_polygon_intersection();">
+        1C polygon intersection
+    </button>
+    <button id="2B"style="width:200px;height:30px;border:2px solid;" onclick="javascript: Part2B_pareto_optimal();">
         2B pareto optimal
-    </label>
-    <div id="box" class="jxgbox" style="width:500px; height:500px;"></div>
+    </button>
+    <button id="lseg"style="width:200px;height:30px;border:2px solid;" onclick="javascript: line_segment_intersection();">
+        Line Segment Intersection
+    </button>
+    <div id="box" class="jxgbox" style="width:500px; height:400px;"></div>
 </body>
 </html>
