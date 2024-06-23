@@ -41,12 +41,14 @@ function line_segment_intersection()
 
     if (lsegs == null)
     {
-        lsegs = CreateRandomLineSegments(10, bounds);
+        var hlsegs = CreateRandomHorizontalSegments(5 + Math.floor(Math.random() * 20), bounds);
+        var vlsegs = CreateRandomVerticalSegments(5 + Math.floor(Math.random() * 20), bounds);
+        lsegs = hlsegs.concat(vlsegs);
     }
     var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 50, 50, 0], axis: true });
     var lines = AddLineSegmentsToBoard(board, lsegs, 'L');
-    var result = FindIntersectionsOfLineSegments(lines);
-    var str = "";
+    var result = FindIntersectionsOfLineSegments(lsegs);
+
     if (Array.isArray(result))
     {
         for (let i = 0; i < result.length; ++i)

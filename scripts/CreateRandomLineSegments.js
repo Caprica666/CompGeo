@@ -32,6 +32,72 @@ function CreateRandomLineSegments(nsegs, bounds)
     return lsegs;
 }
 
+// Create a set of random line horizontal segments
+// nsegs: number of segments wanted
+// bounds: bounding box of segments
+// returns: array of nsegs * 2 points [x, y], 2 points per line segment
+function CreateRandomHorizontalSegments(nsegs, bounds)
+{
+    var width = (bounds[2] - bounds[0]);
+    var height = (bounds[3] - bounds[1]);
+    var lsegs = [];
+    for (let i = 0; i < nsegs; i++)
+    {
+        var x1 = Math.floor(bounds[0] + Math.random() * width);
+        var y = Math.floor(bounds[1] + Math.random() * height);
+        var x2 = Math.floor(bounds[0] + Math.random() * width);
+        if (x1 == x2)
+        {
+            i -= 2;
+            continue;
+        } 
+        if (x1 < x2)
+        {
+            lsegs.push([ x1, y ]);
+            lsegs.push([ x2, y ]);
+        }  
+        else
+        {
+            lsegs.push([ x2, y ]);
+            lsegs.push([ x1, y ]);
+        }
+    }
+    return lsegs;
+}
+
+// Create a set of random vertical line segments
+// nsegs: number of segments wanted
+// bounds: bounding box of segments
+// returns: array of nsegs * 2 points [x, y], 2 points per line segment
+function CreateRandomVerticalSegments(nsegs, bounds)
+{
+    var width = (bounds[2] - bounds[0]);
+    var height = (bounds[3] - bounds[1]);
+    var lsegs = [];
+    for (let i = 0; i < nsegs; i++)
+    {
+        var x = Math.floor(bounds[0] + Math.random() * width);
+        var y1 = Math.floor(bounds[1] + Math.random() * height);
+        var y2 = Math.floor(bounds[1] + Math.random() * height);
+        if (y1 == y2)
+        {
+            i -= 2;
+            continue;
+        } 
+        if (y1 <= y2)
+        {
+            lsegs.push([ x, y1 ]);
+            lsegs.push([ x, y2 ]);
+        }  
+        else
+        {
+            lsegs.push([ x, y2 ]);
+            lsegs.push([ x, y1 ]);
+        }
+    }
+    return lsegs;
+}
+
 // Add line segments to board
 // nameprefix: prefix for name of each line
 // board: JSX board to contain points
