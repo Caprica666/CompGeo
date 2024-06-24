@@ -6,7 +6,8 @@
     <title>Computational Geometry Example</title>
 
     <link rel="stylesheet" type="text/css" href="https://jsxgraph.org/distrib/jsxgraph.css" />
-    <script type="text/javascript">        
+    <script type="text/javascript">
+        let sweepX = Number.MIN_SAFE_INTEGER;        
         function log(str)
         {
             console.log(str);
@@ -20,7 +21,11 @@
     <script type="text/javascript" src="scripts/LinePolyIntersect.js"></script>
     <script type="text/javascript" src="bintree/treebase.js"></script>
     <script type="text/javascript" src="bintree/rbtree.js"></script>
+    <script type="text/javascript" src="scripts/EventTree.js"></script>
+    <script type="text/javascript" src="scripts/LineEvent.js"></script>
     <script type="text/javascript" src="scripts/HorzVertLineIntersection.js"></script>
+    <script type="text/javascript" src="scripts/DisjointLineSegments.js"></script>
+    <script type="text/javascript" src="scripts/RectifyLineSegments.js"></script>
     <script type="text/javascript" src="scripts/FindParetoOptimal.js"></script>
     <script type="text/javascript" src="homework1.js"></script>
  </head>
@@ -34,6 +39,9 @@
     </button>
     <button id="lseg"style="width:200px;height:30px;border:2px solid;" onclick="javascript: line_segment_intersection();">
         3B Line Segment Intersection
+    </button>
+    <button id="lseg"style="width:200px;height:30px;border:2px solid;" onclick="javascript: line_segment_rectify();">
+        3C Line Segment Rectification
     </button>
     <div id="box" class="jxgbox" style="width:500px; height:400px;"></div>
 </body>

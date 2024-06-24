@@ -38,3 +38,11 @@ function FindLineIntersection(p1, p2, line)
     }
     return { t: t };
 }
+
+function ComputeLinePoint(p1, p2, t)
+{
+    var dy = p2.Y() - p1.Y();
+    var dx = p2.X() - p1.X();
+    
+    return [ p1.X() + t * dx, p1.Y() + t * dy ];
+}

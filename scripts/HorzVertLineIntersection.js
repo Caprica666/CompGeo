@@ -1,126 +1,175 @@
-let sweepX = Number.MIN_SAFE_INTEGER;
+
 var epsilon = 1e-13;
 
-// Intersection of vertical lines
-function VertIntersect(ev1, ev2, intersections)
+class HorzVertIntersector
 {
-    var intersections = [];
-    var p1 = ev1.point1;
-    var p2 = ev1.point2;
-    var p3 = ev2.point1;
-    var p4 = ev2.point2;
+    constructor()
+    {
+        this.intersections = [];
+    }
 
-    if (Math.abs(p1[0] - p3[0]) > epsilon)
+    // Intersection of vertical lines
+    VertIntersect(ev1, ev2)
     {
-        return;
-    }
-    if ((p2[1] < p3[1]) || (p4[1] < p1[1]))
-    {
-        return;
-    }
-    if (p1[1] >= p3[1])
-    {
-        intersections.push(p1);
-        PrintIntersection(ev1, ev2, p1);
-    }
-    else
-    {
-        intersections.push(p3);
-        PrintIntersection(ev1, ev2, p3);
-    }
-    if (p2[1] <= p4[1])
-    {
-        intersections.push(p2);
-        PrintIntersection(ev1, ev2, p2);
-    }
-    else
-    {
-        intersections.push(p4);
-        PrintIntersection(ev1, ev2, p4);
-    }
-}
+        var p1 = ev1.point1;
+        var p2 = ev1.point2;
+        var p3 = ev2.point1;
+        var p4 = ev2.point2;
 
-// Intersection of horizontal lines
-function HorzIntersect(ev1, ev2, intersections)
-{
-    var p1 = ev1.point1;
-    var p2 = ev1.point2;
-    var p3 = ev2.point1;
-    var p4 = ev2.point2;
+        if (Math.abs(p1[0] - p3[0]) > epsilon)
+        {
+            return;
+        }
+        if ((p2[1] < p3[1]) || (p4[1] < p1[1]))
+        {
+            return;
+        }
+        if (p1[1] >= p3[1])
+        {
+            this.intersections.push(p1);
+            this.PrintIntersection(ev1, ev2, p1);
+        }
+        else
+        {
+            this.intersections.push(p3);
+            this.PrintIntersection(ev1, ev2, p3);
+        }
+        if (p2[1] <= p4[1])
+        {
+            this.intersections.push(p2);
+            this.PrintIntersection(ev1, ev2, p2);
+        }
+        else
+        {
+            this.intersections.push(p4);
+            this.PrintIntersection(ev1, ev2, p4);
+        }
+    }
 
-    if (Math.abs(p1[1] - p3[1]) > epsilon)
+    // Intersection of horizontal lines
+    HorzIntersect(ev1, ev2)
     {
-        return;
-    }
-    if ((p2[0] < p3[0]) || (p4[0] < p1[0]))
-    {
-        return;
-    }
-    if ((p1[0] >= p3[0]))
-    {
-        intersections.push(p1);
-        PrintIntersection(ev1, ev2, p1);
-    }
-    else
-    {
-        intersections.push(p3);
-        PrintIntersection(ev1, ev2, p3);
-    }
-    if ((p2[1] <= p4[1]))
-    {
-        intersections.push(p2);
-        PrintIntersection(ev1, ev2, p2);
-    }
-    else
-    {
-        intersections.push(p4);
-        PrintIntersection(ev1, ev2, p4);
-    }
-    return intersections;
-}
+        var p1 = ev1.point1;
+        var p2 = ev1.point2;
+        var p3 = ev2.point1;
+        var p4 = ev2.point2;
 
-function GetX(ev)
-{
-    if (ev.type == 'last')
-    {
-        return ev.point2[0];
+        if (Math.abs(p1[1] - p3[1]) > epsilon)
+        {
+            return;
+        }
+        if ((p2[0] < p3[0]) || (p4[0] < p1[0]))
+        {
+            return;
+        }
+        if ((p1[0] >= p3[0]))
+        {
+            this.intersections.push(p1);
+            this.PrintIntersection(ev1, ev2, p1);
+        }
+        else
+        {
+            this.intersections.push(p3);
+            this.PrintIntersection(ev1, ev2, p3);
+        }
+        if ((p2[1] <= p4[1]))
+        {
+            this.intersections.push(p2);
+            this.PrintIntersection(ev1, ev2, p2);
+        }
+        else
+        {
+            this.intersections.push(p4);
+            this.PrintIntersection(ev1, ev2, p4);
+        }
     }
-    return ev.point1[0];
-}
 
-function GetY(ev)
-{
-    if (ev.type == 'last')
-    {
-        return ev.point2[1];
-    }
-    return ev.point1[1];
-}
 
-// Sort events on X and then Y
-function SortOnXY(e1, e2)
-{
-    if (e1.name == e2.name)
+    CheckVertical(ev1, ev2)
     {
-        return 0;
+        if (ev2 != null)
+        {
+            if (ev2.type == 'vert')
+            {
+                this.VertIntersect(ev1, ev2);
+            }
+            // ev vertical, ev2 horizontal
+            else if ((ev1.point1[1] <= ev2.point1[1]) && (ev2.point1[1] <= ev1.point2[1]) &&
+                    (ev2.point1[0] <= ev1.point1[0]) && (ev1.point1[0] <= ev2.point2[0]))
+            {
+                var p = [ ev1.point1[0], ev2.point1[1] ];
+                this.intersections.push(p);
+                this.PrintIntersection(ev1, ev2, p);
+            }           
+        }
     }
-    var x1 = GetX(e1);
-    var x2 = GetX(e2);
-    
-    var dx = x1 - x2;
-    if (Math.abs(dx) > epsilon)
+
+    CheckHorizontal(ev1, ev2)
     {
-        return dx;
+        if (ev2 != null)
+        {
+            if (ev2.type == 'horz')
+            {
+                this.HorzIntersect(ev1, ev2);
+            }
+            // ev horizontal, ev2 vertical
+            else if ((ev1.point1[0] <= ev2.point1[0]) && (ev2.point1[0] <= ev1.point2[0]) &&
+                    (ev2.point1[1] <= ev1.point1[1]) && (ev1.point1[1] <= ev2.point2[1]))
+            {
+                var p = [ ev2.point1[0], ev1.point1[1] ];
+                this.intersections.push(p);
+                this.PrintIntersection(ev1, ev2, p);
+            }           
+        }
     }
-    var y1 = GetY(e1);
-    var y2 = GetY(e2);
-    var dy = y1 - y2;
-    if (Math.abs(dy) > epsilon)
+
+    PrintIntersection(e1, e2, p)
     {
-        return dy;
+        var str = "INTERSECTION: " + e1.name + " x " + e2.name + " at";
+        str += " [" + p[0] + "," + p[1] + "]";
+        log(str);
     }
-    log("Error - endpoints " + e1.name + " and " + e2.name + " co-indicent!");
-    return e1.name.localeCompare(e2.name);
+
+    CheckIntersections(ev1, ev2)
+    {
+        if ((ev1 != null) && (ev2 != null))
+        {
+            if (ev1.type == 'vert')
+            {
+                this.CheckVertical(ev1, ev2);
+            }
+            else
+            {
+                this.CheckHorizontal(ev1, ev2);
+            }
+        }
+    }
+
+    EventIntersections(tree, ev)
+    {
+        var lower = tree.FindLowerBound(ev);
+        var upper = tree.FindUpperBound(ev);
+
+        if (ev.type == 'vert')
+        {
+            while ((lower != null) && (lower.point1[1] <= ev.point1[1]))
+            {
+                this.CheckIntersections(ev, lower);
+                lower = tree.FindLowerBound(lower);
+            }
+            while ((upper != null) && (upper.point1[1] <= ev.point2[1]))
+            {
+                this.CheckIntersections(ev, upper);
+                upper = tree.FindUpperBound(upper);
+            }
+        }
+        else
+        {
+            this.CheckIntersections(ev, lower);
+            this.CheckIntersections(ev, upper);    
+        }
+
+    }
 }
 
 // Sort on Y and X
@@ -130,16 +179,16 @@ function SortOnYX(e1, e2)
     {
         return 0;
     }
-    var y1 = GetY(e1);
-    var y2 = GetY(e2);
+    var y1 = e1.GetY();
+    var y2 = e2.GetY();
     
     var dy = y1 - y2;
     if (Math.abs(dy) > epsilon)
     {
         return dy;
     }
-    var x1 = GetX(e1);
-    var x2 = GetX(e2);
+    var x1 = e1.GetX();
+    var x2 = e2.GetX();
     var dx = x1 - x2;
     if (Math.abs(dx) > epsilon)
     {
@@ -149,184 +198,12 @@ function SortOnYX(e1, e2)
     return e1.name.localeCompare(e2.name);
 }
 
-function CheckVertical(ev1, ev2, intersections)
-{
-    if (ev2 != null)
-    {
-        if (ev2.type == 'vert')
-        {
-            VertIntersect(ev1, ev2, intersections);
-        }
-        // ev vertical, ev2 horizontal
-        else if ((ev1.point1[1] <= ev2.point1[1]) && (ev2.point1[1] <= ev1.point2[1]) &&
-                 (ev2.point1[0] <= ev1.point1[0]) && (ev1.point1[0] <= ev2.point2[0]))
-        {
-            var p = [ ev1.point1[0], ev2.point1[1] ];
-            intersections.push(p);
-            PrintIntersection(ev1, ev2, p);
-        }           
-    }
-}
-
-function CheckHorizontal(ev1, ev2, intersections)
-{
-    if (ev2 != null)
-    {
-        if (ev2.type == 'horz')
-        {
-            HorzIntersect(ev1, ev2, intersections);
-        }
-        // ev horizontal, ev2 vertical
-        else if ((ev1.point1[0] <= ev2.point1[0]) && (ev2.point1[0] <= ev1.point2[0]) &&
-                 (ev2.point1[1] <= ev1.point1[1]) && (ev1.point1[1] <= ev2.point2[1]))
-        {
-            var p = [ ev2.point1[0], ev1.point1[1] ];
-            intersections.push(p);
-            PrintIntersection(ev1, ev2, p);
-        }           
-    }
-}
-
-function PrintIntersection(e1, e2, p)
-{
-    var str = "INTERSECTION: " + e1.name + " x " + e2.name + " at";
-    str += " [" + p[0] + "," + p[1] + "]";
-    log(str);
-}
-
-
-// Describes an intersection event
-// type: type of event, 'horz' or  'vert'
-// point1: endpoint with smallest X or Y
-// point2: endpoint with smallest X or Y
-function LineEvent(type, name, p1, p2, link = null)
-{
-    this.type = type;
-    this.name = name + '-' + type;
-    this.type = type;
-    this.point1 = p1;
-    this.point2 = p2;
-    this.link = link;
-}
-
-function EventToString(ev)
-{
-    var x = GetX(ev);
-    var y = GetY(ev);
-
-    return ev.name + "[" + x + ", " + y + "] ";
-}
-
-function PrintTree(tree, label)
-{
-    var iter = tree.iterator();
-    var str = label + ": ";
-    var i = 0;
-    var ev;
-
-    while ((ev = iter.next()) !== null)
-    {
-        str += EventToString(ev);
-        if ((++i % 6) == 0)
-        {
-            log(str);
-            str = "";
-        }
-    }
-    log(str);
-}
-
-function FindLowerBound(tree, ev)
-{
-    var iter = tree.lowerBound(ev);
-    var data = iter.prev();
-    if (data != null)
-    {
-        log("lower bound " + EventToString(data));
-    }
-    return data;
-}
-
-function FindUpperBound(tree, ev)
-{
-    var iter = tree.upperBound(ev);
-    data = iter.data();
-    if (data != null)
-    {
-        log("upper bound " + EventToString(data));
-    }
-    return data;
-}
-
-function CheckIntersections(ev1, ev2, intersections)
-{
-    if ((ev1 != null) && (ev2 != null))
-    {
-        if (ev1.type == 'vert')
-        {
-            result = CheckVertical(ev1, ev2, intersections);
-        }
-        else
-        {
-            result = CheckHorizontal(ev1, ev2, intersections);
-        }
-        if (result != null)
-        {
-            intersections = intersections.concat(result);
-            PrintIntersections(dv1, ev2, result);
-        }
-    }
-}
-
-function EventIntersections(tree, ev, intersections)
-{
-    var lower = FindLowerBound(tree, ev);
-    var upper = FindUpperBound(tree, ev);
-
-    if (ev.type == 'vert')
-    {
-        while ((lower != null) && (lower.point1[1] <= ev.point1[1]))
-        {
-             CheckIntersections(ev, lower, intersections);
-             lower = FindLowerBound(tree, lower);
-        }
-        while ((upper != null) && (upper.point1[1] <= ev.point2[1]))
-        {
-            CheckIntersections(ev, upper, intersections);
-            upper = FindUpperBound(tree, upper);
-        }
-    }
-    else
-    {
-        CheckIntersections(ev, lower, intersections);
-        CheckIntersections(ev, upper, intersections);    
-    }
-
-}
-
-function RemoveEvent(tree, ev, label)
-{
-    log(label + ": removing event " + EventToString(ev));
-    var removed = tree.remove(ev);
-    if (!removed)
-    {
-        log("Could not remove " + ev.name);
-    }
-}
-
-function InsertEvent(tree, ev, label)
-{  
-    log(label + ": inserting event " + EventToString(ev));
-    tree.insert(ev);  
-}
-
-
 // Find all the intersection points of a set of line segments
 //
 function FindIntersectionsOfLineSegments(lineSegmentArray)
 {
     // sort line segments based on X and then Y
-    var eventQ = new RBTree(SortOnXY);
+    var eventQ = new EventTree('eventQ', new RBTree(SortEventOnXY));
     for (let idx = 0; idx < lineSegmentArray.length; idx += 2)
     {
         var p1 = lineSegmentArray[idx];
@@ -334,37 +211,36 @@ function FindIntersectionsOfLineSegments(lineSegmentArray)
         var isVert = Math.abs(p1[0] - p2[0]) < epsilon;
         var type = isVert ? 'vert' : 'horz';
         var name = "L" + (idx / 2);
-        var ev1 = new LineEvent(type, name, p1, p2);
+        var ev1 = new LineEvent(name, type, p1, p2);
     
-        eventQ.insert(ev1);
-        var ev2 = new LineEvent('last', name, p1, p2, ev1);
-        eventQ.insert(ev2);
+        eventQ.InsertEvent(ev1);
+        var ev2 = new LineEvent(name, 'last', p1, p2, ev1);
+        eventQ.InsertEvent(ev2);
     }
 
     // create balanced binary search tree and add first segment
-    var tree = new RBTree(SortOnYX);
-    var intersections = [];
+    var tree = new EventTree('tree', new RBTree(SortOnYX));
+    var intersector = new HorzVertIntersector();
 
-    while ((ev = eventQ.min()) != null)
+    while ((ev = eventQ.Min()) != null)
     {
-        log("processing event " + EventToString(ev));
-        PrintTree(eventQ, "EventQ");
-        PrintTree(tree, "Tree");
-        RemoveEvent(eventQ, ev, 'eventQ');
+        log("processing event " + ev.EventToString());
+        eventQ.PrintTree();
+        tree.PrintTree();
+        eventQ.RemoveEvent(ev);
         if (ev.type == 'last')
         {
-            var lower = FindLowerBound(tree, ev.link);
-            var upper = FindUpperBound(tree, ev.link);
+            var lower = tree.FindLowerBound(ev.link);
+            var upper = tree.FindUpperBound(ev.link);
     
-            RemoveEvent(tree, ev.link, 'eventQ');
-            CheckIntersections(lower, upper, intersections);
+            tree.RemoveEvent(ev.link);
+            intersector.CheckIntersections(lower, upper);
         }
         else
         {
-            sweepX = GetX(ev);
-            InsertEvent(tree, ev, 'tree');
-            EventIntersections(tree, ev, intersections); 
+            tree.InsertEvent(ev);
+            intersector.EventIntersections(tree, ev); 
         }
     }
-    return intersections; 
+    return intersector.intersections; 
 }

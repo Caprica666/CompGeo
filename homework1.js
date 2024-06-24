@@ -46,7 +46,7 @@ function line_segment_intersection()
         lsegs = hlsegs.concat(vlsegs);
     }
     var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 50, 50, 0], axis: true });
-    var lines = AddLineSegmentsToBoard(board, lsegs, 'L');
+    AddLineSegmentsToBoard(board, lsegs, 'L');
     var result = FindIntersectionsOfLineSegments(lsegs);
 
     if (Array.isArray(result))
@@ -54,8 +54,28 @@ function line_segment_intersection()
         for (let i = 0; i < result.length; ++i)
         {
             var p = result[i];
-            var point = board.create('point', p, { name: "I" + i, size: 4, fillColor: "#0000ff"});
+            board.create('point', p, { name: "I" + i, size: 4, fillColor: "#0000ff"});
         }
+        board.fullUpdate();
+    }
+}
+
+let disjointSegments = null;
+function line_segment_rectify()
+{
+    var bounds = [2, 2, 48, 48];
+
+    if (disjointSegments == null)
+    {
+        disjointSegments = CreateDisjointLineSegments(10, bounds);
+    }
+    var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 50, 50, 0], axis: true });
+    AddLineSegmentsToBoard(board, disjointSegments, 'L');
+    var result = RectifyLineSegments(lsedisjointSegmentsgs);
+
+    if (Array.isArray(result))
+    {
+        AddLineSegmentsToBoard(board, result, 'R');
         board.fullUpdate();
     }
 }

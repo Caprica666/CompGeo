@@ -16,25 +16,27 @@
     <script type="text/javascript" src="scripts/CreateRandomLineSegments.js"></script>
     <script type="text/javascript" src="bintree/treebase.js"></script>
     <script type="text/javascript" src="bintree/rbtree.js"></script>
+    <script type="text/javascript" src="scripts/EventTree.js"></script>
+    <script type="text/javascript" src="scripts/LineEvent.js"></script>
     <script type="text/javascript" src="scripts/LineSegIntersect.js"></script>
     <script type="text/javascript" src="homework1.js"></script>
  </head>
 
 <body>
 <script type=""text/javascript">
-    let lsegs = null;
+    let LineSegments = null;
 
     function line_segment_intersection()
     {
         var bounds = [2, 2, 48, 48]
 
-        if (lsegs == null)
+        if (LineSegments == null)
         {
-            lsegs = CreateRandomLineSegments(10, bounds);
+            LineSegments = CreateRandomLineSegments(15, bounds);
         }
         var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 50, 50, 0], axis: true });
-        var lines = AddLineSegmentsToBoard(board, lsegs, 'L');
-        var result = FindIntersectionsOfLineSegments(lines);
+        var lines = AddLineSegmentsToBoard(board, LineSegments, 'L');
+        var result = FindIntersectionsOfLineSegments(LineSegments);
         var str = "";
         if (Array.isArray(result))
         {

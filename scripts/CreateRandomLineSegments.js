@@ -102,7 +102,7 @@ function CreateRandomVerticalSegments(nsegs, bounds)
 // nameprefix: prefix for name of each line
 // board: JSX board to contain points
 // lsegs: array of points [x, y], 2 points per line segment
-function AddLineSegmentsToBoard(board, lsegs, nameprefix)
+function AddLineSegmentsToBoard(board, lsegs, nameprefix, color = "#000000")
 {
     lines = [];
     for (let i = 0; i < lsegs.length; i += 2)
@@ -112,7 +112,8 @@ function AddLineSegmentsToBoard(board, lsegs, nameprefix)
         var p1 = board.create('point', [pt[0], pt[1]], { name: "P" + j + "-1", size: 4});
         pt = lsegs[i + 1];
         var p2 = board.create('point',  [pt[0], pt[1]], { name: "P" + j + "-2", size: 4});
-        lines.push(board.create('line', [ p1, p2 ], { name: nameprefix + j, straightFirst:false, straightLast:false }));
+        lines.push(board.create('line', [ p1, p2 ],
+                  { name: nameprefix + j, straightFirst:false, straightLast:false, strokeColor: color }));
     }
     return lines;
 }
