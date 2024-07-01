@@ -10,14 +10,6 @@ class CrossEvent extends LineEvent
         this.event2 = ev2;
         this.slope = 0;
     }
-
-    EventToString()
-    {
-        var x = this.GetX();
-        var y = this.GetY();
-        
-        return this.name + "[" + x.toFixed(2) + ", " + y.toFixed(2) + "]";
-    }
 }
 
 class SegmentIntersector

@@ -109,9 +109,9 @@ function AddLineSegmentsToBoard(board, lsegs, nameprefix, color = "#000000")
     {
         var j = Math.floor(i / 2);
         var pt = lsegs[i];
-        var p1 = board.create('point', [pt[0], pt[1]], { name: "P" + j + "-1", size: 4});
+        var p1 = board.create('point', [pt[0], pt[1]], { name: "P" + j + "-1", size: 2});
         pt = lsegs[i + 1];
-        var p2 = board.create('point',  [pt[0], pt[1]], { name: "P" + j + "-2", size: 4});
+        var p2 = board.create('point',  [pt[0], pt[1]], { name: "P" + j + "-2", size: 2});
         lines.push(board.create('line', [ p1, p2 ],
                   { name: nameprefix + j, straightFirst:false, straightLast:false, strokeColor: color }));
     }

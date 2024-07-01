@@ -38,32 +38,6 @@ class Rectifier
         return det;
     }
 
-    // Move all the lines above the given one up by
-    // the given amount
-    MoveLinesUp(ev, amount)
-    {
-        var upper = this.tree.FindUpperBound(ev);
-
-        while (upper != null)
-        {
-            log("Move " + ev.name + " up by " + amount);
-            upper.Y[1] += amount;
-            upper = this.tree.FindUpperBound(upper);
-        }    
-    }
-
-    // Move all the lines below the given one down by
-    // the given amount
-    MoveLinesDown(ev, amount)
-    {
-        while (ev != null)
-        {
-            log("Move " + ev.name + " down by " + amount);
-            ev.Y -= amount;
-            ev = this.tree.FindLowerBound(ev);
-        }    
-    }
-
     EventRectify(ev)
     {
         var lower = this.tree.FindLowerBound(ev);
@@ -72,32 +46,46 @@ class Rectifier
         if (upper != null)
         {
             // check if upper bound was above this line before rectification
-            var ymin = Math.max(upper.point1[1], upper.point2[1]);
-            if (this.Determinant(ev.point1, ev.point2, ymin) > 0)
+            var yint = upper.YIntersection(ev.point1[0]);
+            var afterDy = upper.Y - ev.Y;
+            var beforeDy = yint - ev.point1[1];
+
+            if (afterDy * beforeDy <= 0)
             {
-                // check if upper bound is below this line after rectification
-                if (upper.Y <= ev.Y)
+                var upperY = upper.Y;
+                ev.Y = upper.Y + 1;
+                upper = this.tree.FindUpperBound(upper);
+                if (upper != null)
                 {
-                    var moveup = ev.Y - upper.Y + 1;
-                    this.MoveLinesUp(upper, moveup);
+                    ev.Y = (upper.Y + upperY) / 2;
                 }
+                log("Move " + ev.name + " up to " + ev.Y);
+                this.tree.InsertEvent(ev);
+                return;
             }
         }
         if (lower != null)
         {
             // check if lower bound was below this line before rectification
-            var ymax = Math.max(lower.point1[1], lower.point2[1]);
-            if (this.Determinant(ev.point1, ev.point2, ymax) < 0)
+            yint = lower.YIntersection(ev.point1[0]);
+            beforeDy = ev.point1[1] - yint;
+            afterDy = ev.Y - lower.Y;
+                        
+            if (afterDy * beforeDy <= 0)
             {
-                // check if lower bound is above this line after rectification
-                if (lower.Y >= ev.Y)
+                var lowerY = lower.Y;
+                ev.Y = lower.Y - 1;
+                lower = this.tree.FindLowerBound(lower);
+                if (lower != null)
                 {
-                    var movedown = lower.Y - ev.Y - 1;
-                    this.MoveLinesDown(lower, movedown);
+                    ev.Y = (lowerY + lower.Y) / 2;
                 }
+                log("Move " + ev.name + " down to " + ev.Y);
+                this.tree.InsertEvent(ev);
+                return;
             }
         }
-        this.tree.InsertEvent(tree, ev, 'tree');
+        this.tree.InsertEvent(ev);
     }
 }
 
@@ -113,10 +101,13 @@ function RectifyLineSegments(lineSegmentArray)
         var isVert = Math.abs(p1[0] - p2[0]) < epsilon;
         var type = isVert ? 'vert' : 'horz';
         var name = "L" + (idx / 2);
-        var ev1 = new LineEvent(name, type, p1, p2);
+        var y = (p1[1] + p2[1]) / 2;
+        var ev1 = new LineEvent(name, 'first', p1, p2);
+        ev1.Y = y;
     
         eventQ.InsertEvent(ev1);
         var ev2 = new LineEvent(name, 'last', p1, p2, ev1);
+        ev2.Y = y;
         eventQ.InsertEvent(ev2);
     }
 
@@ -131,6 +122,7 @@ function RectifyLineSegments(lineSegmentArray)
         eventQ.PrintTree();
         tree.PrintTree();
         eventQ.RemoveEvent(ev);
+        log("processing " + ev.EventToString());
         if (ev.type == 'last')
         {
             tree.RemoveEvent(ev.link);
@@ -139,8 +131,8 @@ function RectifyLineSegments(lineSegmentArray)
         }
         else
         {
-            sweepX = GetX(ev);
-            rectifier.EventRectify(ev, intersections); 
+            sweepX = ev.GetX();
+            rectifier.EventRectify(ev); 
         }
     }
     return rectified;

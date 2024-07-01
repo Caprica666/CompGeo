@@ -46,8 +46,27 @@ class LineEvent
     {
         var x = this.GetX();
         var y = this.GetY();
-        
-        return this.name + "-" + this.type + "[" + x + ", " + y + "]";
+        var str = this.name + "-" + this.type + "[";
+
+        if (Number.isInteger(x))
+        {
+            str += x;
+        }
+        else
+        {
+            str += x.toFixed(2);
+        }
+        str += ", ";
+        if (Number.isInteger(y))
+        {
+            str += y;
+        }
+        else
+        {
+            str += y.toFixed(2);
+        }
+        str += "]";       
+        return str;
     }
     
     YIntersection(x)

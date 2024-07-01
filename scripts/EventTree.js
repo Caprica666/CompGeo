@@ -69,6 +69,11 @@ class EventTree
     {
         return this.tree.min();
     }
+
+    iterator()
+    {
+        return this.tree.iterator();
+    }
 }
 
 

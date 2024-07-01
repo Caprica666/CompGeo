@@ -1,6 +1,6 @@
 function Part1C_polygon_intersection()
 {
-    var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 0, 50, 50], axis: true });
+    var board = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 0, 50, 50], axis: true });
     var bounds = [2, 2, 20, 20]
     var poly = CreateRandomConvexPolygon(board, 15, bounds);
     var endpoints = CreateRandomPoints('L', board, 2, bounds);
@@ -45,7 +45,7 @@ function line_segment_intersection()
         var vlsegs = CreateRandomVerticalSegments(5 + Math.floor(Math.random() * 20), bounds);
         lsegs = hlsegs.concat(vlsegs);
     }
-    var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 50, 50, 0], axis: true });
+    var board = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 50, 50, 0], axis: true });
     AddLineSegmentsToBoard(board, lsegs, 'L');
     var result = FindIntersectionsOfLineSegments(lsegs);
 
@@ -60,23 +60,27 @@ function line_segment_intersection()
     }
 }
 
-let disjointSegments = null;
+let randomSegments = null;
+let showRandomLines = 0;
+
 function line_segment_rectify()
 {
-    var bounds = [2, 2, 48, 48];
+    var bounds = [5, 5, 45, 45];
+    var board1 = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 50, 50, 0], axis: true });;
 
-    if (disjointSegments == null)
+    if (randomSegments == null)
     {
-        disjointSegments = CreateDisjointLineSegments(10, bounds);
-    }
-    var board = JXG.JSXGraph.initBoard('box', { boundingbox: [0, 50, 50, 0], axis: true });
-    AddLineSegmentsToBoard(board, disjointSegments, 'L');
-    var result = RectifyLineSegments(lsedisjointSegmentsgs);
+        randomSegments = CreateRandomLineSegments(10, bounds);
+    } 
+    var disjointSegments = CreateDisjointLineSegments(randomSegments, board1, showRandomLines);
+    AddLineSegmentsToBoard(board1, disjointSegments, 'S', color = "#FF0000");
+
+    var board2 = JXG.JSXGraph.initBoard('box2', { boundingbox: [0, 50, 50, 0], axis: true });
+    var result = RectifyLineSegments(disjointSegments);
 
     if (Array.isArray(result))
     {
-        AddLineSegmentsToBoard(board, result, 'R');
-        board.fullUpdate();
+        AddLineSegmentsToBoard(board2, result, 'R', color = "#00FF00");
     }
 }
 
