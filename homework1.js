@@ -2,7 +2,9 @@ function Part1C_polygon_intersection()
 {
     var board = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 0, 50, 50], axis: true });
     var bounds = [2, 2, 20, 20]
-    var poly = CreateRandomConvexPolygon(board, 15, bounds);
+    var polyCreator = new CreatePolygon('convex', 15, bounds);
+    var verts = polyCreator.getPolygon().getVertices();
+    var poly = polyCreator.AddPolygonToBoard(board);
     var endpoints = CreateRandomPoints('L', board, 2, bounds);
     var line = board.create('line', endpoints);
     log("slope = " + line.getSlope() + " yinter = " + line.getRise());
