@@ -25,6 +25,24 @@ function SortOnY(e1, e2)
     return e1.name.localeCompare(e2.name);
 }
 
+function SortOnYIntercept(e1, e2)
+{
+    if (e1 === e2)
+    {
+        return 0;
+    }
+    var y1 = e1.YIntersection(sweepX);
+    var y2 = e2.YIntersection(sweepX);
+    var dy = y1 - y2;
+
+    if (Math.abs(dy) > 1e-13)
+    {
+        return dy;
+    }
+    var dslope = e1.slope - e2.slope; 
+    return dslope; 
+}
+
 class Rectifier
 {
     constructor(tree)
@@ -38,7 +56,7 @@ class Rectifier
         return det;
     }
 
-    EventRectify(ev)
+    EventRectify1(ev)
     {
         var lower = this.tree.FindLowerBound(ev);
         var upper = this.tree.FindUpperBound(ev);
@@ -87,6 +105,35 @@ class Rectifier
         }
         this.tree.InsertEvent(ev);
     }
+    
+    EventRectify(ev)
+    {
+        var lower = this.tree.FindLowerBound(ev);
+        var upper = this.tree.FindUpperBound(ev);
+
+        if (upper != null)
+        {
+            if (lower != null)
+            {
+                ev.Y = (upper.Y + lower.Y) / 2;
+            }
+            else
+            {
+                if (ev.Y > upper.Y)
+                {
+                    ev.Y = upper.Y - 1;
+                }
+            }
+        }
+        else if (lower != null)
+        {
+            if (ev.Y < lower.Y)
+            {
+                ev.Y = lower.Y + 1;
+            }
+        }
+        this.tree.InsertEvent(ev);
+    }
 }
 
 // Rectify a set of line segments
@@ -112,7 +159,7 @@ function RectifyLineSegments(lineSegmentArray)
     }
 
     // create balanced binary search tree and add first segment
-    var tree = new EventTree('tree', new RBTree(SortOnY));
+    var tree = new EventTree('tree', new RBTree(SortOnYIntercept));
     var rectified = [];
     var rectifier = new Rectifier(tree);
 

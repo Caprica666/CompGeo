@@ -88,7 +88,7 @@ class DisjointSegs
             {
                 t1 = (ev.point1[0] - p1[0]) / dx1;
                 y = ev.point1[1] + t1 * dy1;                              
-                t2 = (y - p1[1]) / dy2;
+                t2 = (y - ev.point1[1]) / dy2;
             }
             else if (Math.abs(slope1 - slope2) < this.epsilon)
             {
@@ -124,31 +124,6 @@ class DisjointSegs
         return [ p1[0] + t * dx, p1[1] + t * dy ];
     }
 
-    SortEventOnX(e1, e2)
-    {
-        if (e1.name == e2.name)
-        {
-            return 0;
-        }
-        var x1 = e1.GetX();
-        var x2 = e2.GetX();
-        
-        var dx = x1 - x2;
-        if (Math.abs(dx) > this.epsilon)
-        {
-            return dx;
-        }
-        var y1 = e1.GetY();
-        var y2 = e2.GetY();
-        var dy = y1 - y2;
-        if (Math.abs(dy) > this.epsilon)
-        {
-            return dy;
-        }
-        log("Error - endpoints " + e1.name + " and " + e2.name + " co-indicent!");
-        return 0;
-    }
-
     PrintYIntersections()
     {
         var iter = this.tree.iterator();
@@ -167,67 +142,6 @@ class DisjointSegs
             }
         }
         log(str);
-    }
-
-    PreventIntersection(e1, e2)
-    {
-        var result = this.ComputeLineIntersection(e2.point1, e2.point2, e1);
-        var rc = 0;
-
-        if ((result != null) && (result.intersection != null))
-        {
-            var t = result.t;
-            var newpoint;
-            
-            this.tree.RemoveEvent(e1);
-            if ((t >= 0) && (t <= 1))
-            {
-                if (t < 0.5)
-                {
-                    t += 0.05;
-                    newpoint = this.ComputeLinePoint(e1.point1, e1.point2, t);
-                    log("Change endpoint 1 " + e1.EventToString() + " to [" + newpoint[0] + ", " + newpoint[1] + "]");
-                    e1.point1 = newpoint;
-                    this.eventQ.InsertEvent(e1);
-                    return -1;
-                }
-                else
-                {
-                    t -= 0.05;
-                    newpoint = this.ComputeLinePoint(e1.point1, e1.point2, t);
-                    log("Change endpoint 2 " + e1.name + " from [" + e1.point2[0] + ", " + e1.point2[1] + "] to [" + newpoint[0] + ", " + newpoint[1] + "]");
-                    e1.point2 = newpoint;
-                    this.eventQ.RemoveEvent(e1.link);
-                    e1.link.point2 = newpoint;
-                    this.eventQ.InsertEvent(e1.link);
-                    rc = 1;
-                }
-            }
-        }   
-        this.tree.InsertEvent(e1);
-        return rc;
-    }
-
-    CheckIntersections(ev)
-    {  
-        var lower = this.tree.FindLowerBound(ev);
-        var upper = this.tree.FindUpperBound(ev);
-        var rc = 0;
-
-        // check for intersection with current event and its predecessors
-        while ((lower != null) && (rc = this.PreventIntersection(ev, lower)) > 0)
-        {
-            lower = this.tree.FindLowerBound(lower);
-        }
-        if (rc < 0)
-        {
-            //return;
-        }
-        // check for intersection with current event and its successors
-        while ((upper != null) && (this.PreventIntersection(ev, upper) > 0))
-        {
-            upper = this.tree.FindUpperBound(upper);   
-        }   
     }
 
     FindIntersection(e1, e2)
@@ -364,7 +278,6 @@ class DisjointSegs
             else if (ev.type == 'first')
             {
                 sweepX = ev.GetX();
-                //this.tree.InsertEvent(ev);
                 this.CheckForIntersections(ev); 
             }
         }
