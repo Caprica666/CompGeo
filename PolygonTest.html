@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Computational Geometry Example</title>
+
+    <link rel="stylesheet" type="text/css" href="https://jsxgraph.org/distrib/jsxgraph.css" />
+    <script type="text/javascript">
+        let sweepX = Number.MIN_SAFE_INTEGER;        
+        function log(str)
+        {
+            console.log(str);
+        }
+    </script>
+    <script type="text/javascript" src="https://jsxgraph.org/distrib/jsxgraphcore.js"></script>
+    <script type="text/javascript" src="scripts/LineIntersection.js"></script>
+    <script type="text/javascript" src="scripts/CreateRandomPolygon.js"></script>
+    <script type="text/javascript" src="scripts/CreateRandomPoints.js"></script>
+    <script type="text/javascript" src="bintree/treebase.js"></script>
+    <script type="text/javascript" src="bintree/rbtree.js"></script>
+    <script type="text/javascript" src="scripts/EventTree.js"></script>
+    <script type="text/javascript" src="scripts/LineEvent.js"></script>
+    <script type = "text/javascript">
+        function elliptical_polygon()
+        {
+            var board = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 0, 50, 50], axis: true });
+            var bounds = [2, 2, 40, 30]
+            var polyCreator = new CreatePolygon('simple', 15, bounds);
+            var verts = polyCreator.getPolygon().getVertices();
+            var poly = polyCreator.AddPolygonToBoard(board);
+        }
+    </script>
+ </head>
+
+<body>
+    <button id="1C" style="width:200px;height:30px;border:2px solid;" onclick="javascript: elliptical_polygon();">
+        simple polygon
+    </button>
+    <div id="box1" class="jxgbox" style="width:400px; height:400px; float: left;"></div>
+</body>
+</html>

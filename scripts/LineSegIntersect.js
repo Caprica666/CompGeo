@@ -178,6 +178,7 @@ function SortEventOnY(e1, e2)
     return dslope; 
 }
 
+
 // Find all the intersection points of a set of line segments
 //
 function FindIntersectionsOfLineSegments(lineSegmentArray)
