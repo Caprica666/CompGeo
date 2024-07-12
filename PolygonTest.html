@@ -21,22 +21,48 @@
     <script type="text/javascript" src="bintree/rbtree.js"></script>
     <script type="text/javascript" src="scripts/EventTree.js"></script>
     <script type="text/javascript" src="scripts/LineEvent.js"></script>
+    <script type="text/javascript" src="scripts/HalfEdge.js"></script>
     <script type = "text/javascript">
-        function elliptical_polygon()
+        function simple_polygon()
         {
             var board = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 0, 50, 50], axis: true });
             var bounds = [2, 2, 40, 30]
             var polyCreator = new CreatePolygon('simple', 15, bounds);
             var verts = polyCreator.getPolygon().getVertices();
-            var poly = polyCreator.AddPolygonToBoard(board);
+            var pmap = new PlanarMap();
+            var face = pmap.addFace(verts);
+            log(pmap.toString());
+            var poly = face.addFaceToBoard(board, 'red');
+        }
+        function split_face()
+        {
+            var board = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 0, 50, 50], axis: true });
+            var bounds = [2, 2, 30, 30]
+            var polyCreator = new CreatePolygon('convex', 10, bounds);
+            var verts = polyCreator.getPolygon().getVertices();
+            var pmap = new PlanarMap();
+            var face = pmap.addFace(verts);
+            log(pmap.toString());
+            var poly1 = face.addFaceToBoard(board, null);
+            var p1 = verts[0];
+            var p2 = verts[4];
+            var edge = pmap.addEdgeFromPoints(p1, p2, face);
+            var face2 = pmap.getFace(1);
+            //board.removeObject(poly1);
+            poly1 = face.addFaceToBoard(board, 'blue');
+            face2.addFaceToBoard(board, 'green');
         }
     </script>
  </head>
 
 <body>
-    <button id="1C" style="width:200px;height:30px;border:2px solid;" onclick="javascript: elliptical_polygon();">
+    <button id="1C" style="width:200px;height:30px;border:2px solid;" onclick="javascript: simple_polygon();">
         simple polygon
     </button>
     <div id="box1" class="jxgbox" style="width:400px; height:400px; float: left;"></div>
+    <br>
+    <button id="1C" style="width:200px;height:30px;border:2px solid;" onclick="javascript: split_face();">
+        split face
+    </button>
 </body>
 </html>
