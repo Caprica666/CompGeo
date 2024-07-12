@@ -48,9 +48,14 @@
             var p2 = verts[4];
             var edge = pmap.addEdgeFromPoints(p1, p2, face);
             var face2 = pmap.getFace(1);
-            //board.removeObject(poly1);
-            poly1 = face.addFaceToBoard(board, 'blue');
-            face2.addFaceToBoard(board, 'green');
+            var poly2 = face.addFaceToBoard(board, 'blue');
+            var poly3 = face2.addFaceToBoard(board, 'green');
+            board.removeObject(poly1);
+            pmap.removeEdgeFromPoints(p1, p2);
+            log("face: " + face.edgesToString());
+            face.addFaceToBoard(board, 'red');
+            board.removeObject(poly2);
+            board.removeObject(poly3);
         }
     </script>
  </head>

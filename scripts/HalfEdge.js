@@ -48,9 +48,10 @@ class Vertex
 
 class Face
 {
-    constructor()
+    constructor(map)
     {
         this.edge = null;
+        this.map = map;
     }
 
     // Find an edge in this face given the X,Y coordinate of its vertex
@@ -107,6 +108,7 @@ class Face
         if (this.edge == null)
         {
             this.edge = new HalfEdge(vtx2, this);
+            this.map.appendEdge(this.edge);
             return this.edge;
         }
         var v1Prev = this.findEdgeFromVertex(vtx1);
@@ -121,6 +123,7 @@ class Face
 
         // destination vertex not found in this face.
         // assume this edge comes after previous edge
+        this.map.appendEdge(e);
         if (v2Prev == null)
         {
             v2Prev = v1Prev.next;
@@ -142,8 +145,6 @@ class Face
         // this edge splits the face into two faces
         // it is an interior edge between two faces
         // make a new face and add the twin edge
-        e.outside = false;
-
         var v2Next = v2Prev.next;
         var v1Next = v1Prev.next;
         if ((v1Prev == v2Next) || (v2Prev == v1Next))
@@ -154,6 +155,9 @@ class Face
         var newFace = new Face();
         var twin = new HalfEdge(vtx1, newFace);
 
+        this.map.appendEdge(twin);
+        e.outside = false;
+        twin.outside = false;
         e.prev = v1Prev;
         e.next = v2Next;
         v1Prev.next = e;
@@ -168,6 +172,64 @@ class Face
         v2Prev.next = twin; 
         twin.setFace(newFace);
         return e;
+    }
+
+    removeEdge(edge)
+    {
+        // remove an outside edge
+        // connect the edges preceding and following together if possible
+        if (edge.outside)
+        {
+            var prevEdge = edge.prev;
+            var nextEdge = edge.next;
+            var face = this.face;
+
+            if (edge.next == null)
+            {
+                face.edges = null;
+                return true;
+            }
+            if (prevEdge == nextEdge)
+            {
+                prevEdge.next = null;
+                prevEdge.prev = null;
+                return true;
+            }
+            prevEdge.next = nextEdge;
+            nextEdge.prev = prevEdge;
+            edge.prev = null;
+            edge.next = null;
+            return true;
+        }
+        // the edge is an interior edge
+        // delete the edge and its twin and
+        // combine the two faces
+        var twin = edge.twin;
+
+        if (twin == null)
+        {
+            log("Error: interior edge does not have twin");
+            return false;
+        }
+        var v2Prev = twin.prev;
+        var v2Next = edge.next;
+        var v1Prev = edge.prev;
+        var v1Next = twin.next;
+        var twinFace = twin.face;
+        twin.setFace(edge.face);
+        v1Prev.next = v1Next;
+        v1Next.prev = v1Prev;
+        v2Next.prev = v2Prev;
+        v2Prev.next = v2Next;
+        edge.face.edge = v2Prev;
+        edge.face = null;
+        edge.prev = null;
+        edge.next = null;
+        twin.prev = null;
+        twin.next = null;
+        twin.face = null;
+        twinFace.map.deleteFace(twinFace);
+        return true;        
     }
 
     vertsToString()
@@ -226,7 +288,7 @@ class Face
             edge = edge.next;
             ++i;
         }
-        while (edge != this.edge)
+        while ((edge != null) && (edge != this.edge))
         var poly = board.create('polygon', points, { borders: { strokeColor: color }, hasInnerPoint: true });
         return poly;
     }
@@ -262,14 +324,12 @@ class PlanarMap
     findEdgeFromPoints(pt1, pt2)
     {
         for (let i = 0; i < this.edges.length; ++i)
+        {
+            var e = this.edges[i];
+            var v = e.vertex;
+            var p2 = v.point;
+            if ((Math.abs(p2[0] - pt2[0]) > this.epsilon) && (Math.abs(p2[1] - pt2[1]) > this.epsilon))
             {
-                var e = this.edges[i];
-                var v = e.vertex;
-                var p2 = v.point;
-                if ((Math.abs(p2[0] - pt2[0]) > this.epsilon) || (Math.abs(p2[1] - pt2[1]) > this.epsilon))
-                {
-                    continue;
-                }
                 if (e.prev == null)
                 {
                     if (pt1 == null)
@@ -279,12 +339,13 @@ class PlanarMap
                     break;
                 }
                 var p1 = e.prev.vertex.point;
-                if ((p1[0] == pt1[0]) && (p1[1] == pt1[1]))
+                if ((Math.abs(p1[0] - pt1[0]) > this.epsilon) && (Math.abs(p1[1] - pt1[1]) > this.epsilon))
                 {
                     return e;
                 }
             }
-            return null;        
+        }
+        return null;        
     }
 
     findEdgeFromVerts(vtx1, vtx2)
@@ -341,7 +402,7 @@ class PlanarMap
         {
             log("Cannot find point(s) in map");
         }
-        this.addEdge(vtx1, vtx2, face);
+        return this.addEdge(vtx1, vtx2, face);
     }
 
     addEdge(vtx1, vtx2, face)
@@ -356,11 +417,83 @@ class PlanarMap
         if (!edge.outside && (edge.twin != null))
         {
             var newFace = edge.twin.face;
-            this.faces.push(newFace);
+            this.appendFace(newFace);
             log("old face: " + face.edgesToString());
             log("new face: " + newFace.edgesToString());
         }
         return edge;
+    }
+
+    deleteEdge(vtx1, vtx2)
+    {
+        var edge = null;
+        var i = 0;
+
+        for (i = 0; i < this.edges.length; ++i)
+        {
+            var e = this.edges[i];
+
+            if (e.vertex == vtx2)
+            {
+                if (e.prev == null)
+                {
+                    if (vtx1 == null)
+                    {
+                        edge = e;
+                        break;
+                    }
+                    return null;
+                }
+                if (e.prev.vertex == vtx1)
+                {
+                    edge = e;
+                    break;
+                }
+            }
+        }
+        if (edge != null)
+        {
+            delete this.edges[i];
+            return edge;
+        }
+        return null;
+    }
+
+    removeEdgeFromPoints(p1, p2)
+    {
+        var vtx1 = this.findVertex(p1);
+        var vtx2 = this.findVertex(p2);
+
+        if ((vtx1 == null) || (vtx2 == null))
+        {
+            log("vertex not found for input point(s)");
+            return false;
+        }
+        return this.removeEdge(vtx1, vtx2);
+    }
+
+    removeEdge(vtx1, vtx2)
+    {
+        var edge = this.deleteEdge(vtx1, vtx2);
+
+        if (edge != null)
+        {
+            return edge.face.removeEdge(edge);
+        }
+        return false;
+    }
+
+    deleteFace(face)
+    {
+        for (let i = 0; i < this.faces.length; ++i)
+        {
+            if (this.faces[i] == face)
+            {
+                delete this.faces[i];
+                return true;
+            }
+        }
+        return false;
     }
 
     findTwin(edge)
@@ -378,24 +511,33 @@ class PlanarMap
         return this.findEdgeFromVerts(edge.vertex, prevEdge.vertex);
     }
 
+    appendEdge(edge)
+    {
+        this.edges.push(edge);
+    }
+
     addFace(inputVerts)
     {
-        var face = new Face();
+        var face = new Face(this);
         var edge;
 
-        this.faces.push(face);
+        this.appendFace(face);
         var firstVtx = this.addVertex(inputVerts[0]);
         var prevVtx = firstVtx;
         for (let i = 1; i < inputVerts.length; ++i)
         {
             var curVtx = this.addVertex(inputVerts[i], face);
             edge = face.addEdge(prevVtx, curVtx);
-            this.edges.push(edge);
             prevVtx = curVtx;
         }
         edge = this.addEdge(prevVtx, firstVtx, face);
-        this.edges.push(edge);
         return face;
+    }
+
+    appendFace(face)
+    {
+        this.faces.push(face);
+        face.map = this;
     }
 
     toString()
