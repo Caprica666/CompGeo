@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Computational Geometry Unit Tests</title>
+
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.21.0.css">
+    <script type="text/javascript">      
+        function log(str)
+        {
+            console.log(str);
+        }
+    </script>
+
+ </head>
+
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="https://code.jquery.com/qunit/qunit-2.21.0.js"></script>
+    <script src="scripts/HalfEdge.js"></script>
+    <script type = "text/javascript">
+        function split_face()
+        {
+            var verts = [ [ 0, 0 ], [ 0, 20 ], [ 20, 20 ],  [ 20, 0 ] ];
+            var pmap = new PlanarMap();
+            var face = pmap.addFace(verts);
+            var p1 = [ 0, 0 ];
+            var p2 = [ 20, 20 ];
+            var edge = pmap.addEdgeFromPoints(p1, p2, face);
+            return pmap;
+        }
+        function join_face()
+        {
+            var verts1 = [ [ 0, 0 ], [ 0, 20 ], [ 20, 20 ] ];
+            var verts2 = [ [ 0, 0 ], [ 20, 20 ], [ 20, 0 ] ];
+            var pmap = new PlanarMap();
+            var face1 = pmap.addFace(verts1);
+            var face2 = pmap.addFace(verts2);
+            var p1 = [ 0, 0 ];
+            var p2 = [ 20, 20 ];
+
+            pmap.removeEdgeFromPoints(p1, p2);
+            return pmap;
+        }
+        QUnit.module('planar map')
+        QUnit.test('split_face', function(assert)
+        {
+            var pmap = split_face();
+            assert.notEqual(pmap, null);
+            var face1 = pmap.getFace(0);
+            var face2 = pmap.getFace(1);
+
+            assert.notEqual(face1, null);
+            assert.notEqual(face2, null);
+        });
+        QUnit.test('join_face', function(assert)
+        {
+            var pmap = join_face();
+            assert.notEqual(pmap, null);
+            var face1 = pmap.getFace(0);
+            var face2 = pmap.getFace(1);
+            assert.notEqual(face1, null);
+            assert.equal(face2, null);
+        });
+</script>
+</body>
+</html>

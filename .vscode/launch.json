@@ -5,7 +5,7 @@
         "type": "chrome",
         "request": "launch",
         "name": "Homework1",
-        "file": "${workspaceFolder}/PolygonTest.html",
+        "file": "${workspaceFolder}/UnitTest.html",
         "webRoot": "${workspaceFolder}",
         "runtimeExecutable" : "stable",
       }

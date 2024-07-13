@@ -494,7 +494,7 @@ class PlanarMap
         }
         if (edge != null)
         {
-            delete this.edges[i];
+            this.edges.splice(i, 1);
             return edge;
         }
         return null;
@@ -547,7 +547,7 @@ class PlanarMap
         {
             if (this.faces[i] == face)
             {
-                delete this.faces[i];
+                this.faces.splice(i, 1);
                 return true;
             }
         }
