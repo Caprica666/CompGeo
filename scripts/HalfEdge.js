@@ -99,6 +99,21 @@ class Face
         return null;        
     }
 
+    connectTwin(edge, vtx1)
+    {
+        var vtx2 = edge.vertex;
+        var twin = this.map.findEdgeFromVerts(vtx2, vtx1);
+        if ((twin != null) && (twin.face != this))
+        {
+            edge.outside = false;
+            twin.outside = false;
+            twin.twin = edge;
+            edge.twin = twin;
+            return true;
+        }
+        return false;
+    }
+
     // Add an edge to this face originating at the given vertex
     // No check is made to see if the edge already exists
     // returns: edge that was added
@@ -109,10 +124,12 @@ class Face
         {
             this.edge = new HalfEdge(vtx2, this);
             this.map.appendEdge(this.edge);
+            this.connectTwin(this.edge, vtx1);
             return this.edge;
         }
         var v1Prev = this.findEdgeFromVertex(vtx1);
         var v2Prev = this.findEdgeFromVertex(vtx2);
+        var twin;
 
         if (v1Prev == null)
         {
@@ -139,6 +156,7 @@ class Face
                 v1Prev.prev = e;
                 e.next = v1Prev;
             }
+            this.connectTwin(e, vtx1);
             return e;
         }
         // both vertices are in this face
@@ -153,7 +171,7 @@ class Face
             return null;
         }
         var newFace = new Face();
-        var twin = new HalfEdge(vtx1, newFace);
+        twin = new HalfEdge(vtx1, newFace);
 
         this.map.appendEdge(twin);
         e.outside = false;
@@ -171,6 +189,7 @@ class Face
         v1Next.prev = twin;
         v2Prev.next = twin; 
         twin.setFace(newFace);
+        this.map.appendFace(newFace);
         return e;
     }
 
@@ -230,6 +249,36 @@ class Face
         twin.face = null;
         twinFace.map.deleteFace(twinFace);
         return true;        
+    }
+
+    // find all faces adjacent to this one
+    // (faces that share an interior edge)
+    findAdjacentFaces()
+    {
+        var adjacent = [];
+        var edge = this.edge;
+        var curFace = null;
+
+        do
+        {
+            if (!edge.outside)
+            {
+                var twin = edge.twin;
+
+                if (twin == null)
+                {
+                    log("Error: interior edge without twin");
+                    continue;
+                }
+                if (twin.face != curFace)
+                {
+                    adjacent.push(twin.face);
+                    curFace = twin.face;
+                }
+            }
+        }
+        while ((edge != null) && (edge != this.edges));
+        return adjacent;
     }
 
     vertsToString()
@@ -413,15 +462,7 @@ class PlanarMap
         {
             return edge;
         }
-        edge = face.addEdge(vtx1, vtx2);
-        if (!edge.outside && (edge.twin != null))
-        {
-            var newFace = edge.twin.face;
-            this.appendFace(newFace);
-            log("old face: " + face.edgesToString());
-            log("new face: " + newFace.edgesToString());
-        }
-        return edge;
+        return face.addEdge(vtx1, vtx2);
     }
 
     deleteEdge(vtx1, vtx2)
@@ -483,6 +524,23 @@ class PlanarMap
         return false;
     }
 
+    removeFace(face)
+    {
+        this.deleteFace(face);
+        var edge = face.edge;
+
+        do
+        {
+            if (!edge.outside && (edge.twin != null))
+            {
+                edge.twin.outside = true;
+                edge.twin.twin = null;
+                this.deleteEdge(edge);
+            }
+        }
+        while ((edge != null) && (edge != face.edge));
+    }
+
     deleteFace(face)
     {
         for (let i = 0; i < this.faces.length; ++i)
@@ -530,7 +588,7 @@ class PlanarMap
             edge = face.addEdge(prevVtx, curVtx);
             prevVtx = curVtx;
         }
-        edge = this.addEdge(prevVtx, firstVtx, face);
+        edge = face.addEdge(prevVtx, firstVtx);
         return face;
     }
 

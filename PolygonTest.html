@@ -38,25 +38,42 @@
         {
             var board = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 0, 50, 50], axis: true });
             var bounds = [2, 2, 30, 30]
-            var polyCreator = new CreatePolygon('convex', 10, bounds);
-            var verts = polyCreator.getPolygon().getVertices();
+            var verts = [ [ 0, 0 ], [ 0, 20 ], [ 20, 20 ],  [ 20, 0 ] ];
             var pmap = new PlanarMap();
             var face = pmap.addFace(verts);
             log(pmap.toString());
             var poly1 = face.addFaceToBoard(board, null);
-            var p1 = verts[0];
-            var p2 = verts[4];
+            var p1 = [ 0, 0 ];
+            var p2 = [ 20, 20 ];
             var edge = pmap.addEdgeFromPoints(p1, p2, face);
             var face2 = pmap.getFace(1);
             var poly2 = face.addFaceToBoard(board, 'blue');
             var poly3 = face2.addFaceToBoard(board, 'green');
             board.removeObject(poly1);
-            pmap.removeEdgeFromPoints(p1, p2);
-            log("face: " + face.edgesToString());
-            face.addFaceToBoard(board, 'red');
-            board.removeObject(poly2);
-            board.removeObject(poly3);
         }
+        function join_face()
+        {
+            var board = JXG.JSXGraph.initBoard('box1', { boundingbox: [0, 0, 50, 50], axis: true });
+            var bounds = [2, 2, 30, 30]
+            var verts1 = [ [ 0, 0 ], [ 0, 20 ], [ 20, 20 ] ];
+            var verts2 = [ [ 0, 0 ], [ 20, 20 ], [ 20, 0 ] ];
+
+            var pmap = new PlanarMap();
+            var face1 = pmap.addFace(verts1);
+            var face2 = pmap.addFace(verts2);
+
+            var p1 = [ 0, 0 ];
+            var p2 = [ 20, 20 ];
+            log(pmap.toString());
+            var poly1 = face1.addFaceToBoard(board, 'red');
+            var poly2 = face2.addFaceToBoard(board, 'blue');
+            pmap.removeEdgeFromPoints(p1, p2);
+            log("joined face: " + face1.edgesToString());
+            board.removeObject(poly1);
+            board.removeObject(poly2);
+            poly1 = face1.addFaceToBoard(board, 'green');
+        }
+
     </script>
  </head>
 
@@ -68,6 +85,10 @@
     <br>
     <button id="1C" style="width:200px;height:30px;border:2px solid;" onclick="javascript: split_face();">
         split face
+    </button>
+    <br>
+    <button id="1C" style="width:200px;height:30px;border:2px solid;" onclick="javascript: join_face();">
+        join face
     </button>
 </body>
 </html>
